@@ -8,7 +8,7 @@ cors = CORS(app)
 @app.route('/poi')
 @cross_origin()
 def list_poi():
-    with open('../data/tweets.json', 'r') as f:
+    with open('data/first.json', 'r') as f:
         l = json.load(f)
 
     return jsonify({
