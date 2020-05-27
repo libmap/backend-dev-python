@@ -1,8 +1,6 @@
 from tweepy import AppAuthHandler, OAuthHandler, API
+from .shared import base_folder
 import json
-import os
-
-base_folder = os.path.dirname(os.path.realpath(__file__)) + '/../'
 
 def read_auth_json():
     ad = None

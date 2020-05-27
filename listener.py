@@ -3,7 +3,7 @@ import sys
 import json
 import tweepy
 
-from lib.twitter import get_auth_user
+from lib.twitterAuth import get_auth_user
 
 class DecarbnowStreamListener(tweepy.StreamListener):
     def on_status(self, tweet):
