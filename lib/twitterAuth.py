@@ -1,10 +1,11 @@
 from tweepy import AppAuthHandler, OAuthHandler, API
 from .shared import base_folder
 import json
+import os
 
 def read_auth_json():
     ad = None
-    with open(base_folder + 'twitter-auth.json') as json_file:
+    with open(os.path.join(base_folder, 'twitter-auth.json')) as json_file:
         ad = json.load(json_file)
     if ad is None:
         raise Exception('Auth missing')
