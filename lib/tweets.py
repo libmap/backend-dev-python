@@ -1,9 +1,9 @@
-from .shared import data_folder
+from .shared import tweets_folder
 import json
 import os
 
-def readTweetsFromFolder(folder = 'tweets'):
-    folder = os.path.join(data_folder, folder)
+def readTweetsFromFolder(folder):
+    folder = os.path.join(tweets_folder, folder)
     tweets = []
     for fp in os.listdir(folder):
         with open(os.path.join(folder, fp), 'r') as f:
