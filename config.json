@@ -1,0 +1,13 @@
+{
+    "tweetsFetchSettings": {
+        "default": "test",
+        "list": {
+            "test": {
+                "listen": "map decarbnow abteil org",
+                "init": "map.decarbnow.abteil.org",
+                "folder": "test",
+                "file": "test.json"
+            }
+        }
+    }
+}

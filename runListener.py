@@ -1,46 +1,51 @@
 #!/usr/bin/env python
 import json
 import tweepy
-import copy
 import os
+import logging
+
 from lib.tweets import *
-from lib.shared import data_folder, tweets_folder
-
-searchString = 'map.decarbnow.abteil.org'
-tweets_search_folder = os.path.join(tweets_folder, searchString)
-
-def createAndwriteApiJson():
-    tweets = readTweetsFromFolder(searchString)
-    print('Count tweets {}'.format(len(tweets)))
-    tweetsFilter = [t for t in tweets if len(getPathsOfLinks(t)) > 0]
-    print('Count filtered tweets {}'.format(len(tweetsFilter)))
-    tree = TweetTree(tweets)
-    print(tree)
-    apiJson = tree.getApiJson()
-    with open(os.path.join(data_folder, 'api.json'), 'w') as json_file:
-        json.dump(apiJson, json_file)
-        print('New JSON Api file written.')
-
-
+from lib.shared import data_folder, tweets_folder, base_folder, tweetsFetchSettings
 from lib.twitterAuth import get_auth_user
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler(os.path.join(base_folder, 'log/listener.log')),
+        logging.StreamHandler()
+    ]
+)
+
+searchString = tweetsFetchSettings['listen']
+tweets_search_folder = os.path.join(tweets_folder, tweetsFetchSettings['folder'])
 
 class DecarbnowStreamListener(tweepy.StreamListener):
     def on_status(self, tweet):
         id = tweet._json['id']
-        print('Getting new tweet with id: {}'.format(id))
+        logging.info('Listener got new tweet: {}'.format(id))
         with open(os.path.join(tweets_search_folder, '{}.json').format(id), 'w') as json_file:
             json.dump(tweet._json, json_file)
-        createAndwriteApiJson()
+
+        createAndwriteTweetsApiJson(tweetsFetchSettings['folder'], tweetsFetchSettings['file'])
 
     def on_error(self, status_code):
-        print('Error occured, status code: ' + str(status_code))
+        logging.warning('Listener got error, status code: {}'.format(status_code))
         return True
+
+
+logging.info('Init Listener:')
+logging.info('  - Tweets Folder: \'{}\''.format(tweetsFetchSettings['folder']))
+logging.info('  - Search String: \'{}\''.format(searchString))
 
 listener = DecarbnowStreamListener()
 stream = tweepy.Stream(auth = get_auth_user(), listener = listener, tweet_mode = 'extended')
 
-#stream.filter(track=['corona'], is_async=True)
-#stream.filter(track=['map.decarbnow.abteil.org'])
+logging.info('Init Tweets API File ...')
+createAndwriteTweetsApiJson(tweetsFetchSettings['folder'], tweetsFetchSettings['file'])
 
-createAndwriteApiJson()
-stream.filter(track=[searchString])
+logging.info('Start Listener ...')
+try:
+    stream.filter(track=[searchString])
+except KeyboardInterrupt:
+    pass

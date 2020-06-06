@@ -1,73 +1,64 @@
-from .shared import tweets_folder
 import json
 import os
+import logging
+import GetOldTweets3 as got
 
-def readTweetsFromFolder(folder):
-    folder = os.path.join(tweets_folder, folder)
-    tweets = []
-    for fp in os.listdir(folder):
-        with open(os.path.join(folder, fp), 'r') as f:
-            tweets.append(json.load(f))
+from .shared import tweets_folder, data_folder
+from .TweetTree import TweetTree, readTweetsFromFolder, getPathsOfLinks
+from .twitterAuth import get_api_app
+
+def getOldTweetIds(searchString, max = 100):
+    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(searchString)\
+                                               .setMaxTweets(max)
+    logging.info('Loading old tweet ids from twitter (GoT):')
+    logging.info('  - Search String: \'{}\''.format(searchString))
+    logging.info('  - Max Tweets: {}'.format(max))
+
+    tweets = got.manager.TweetManager.getTweets(tweetCriteria)
+
+    logging.info('Got {} tweets:'.format(len(tweets)))
+    for t in tweets:
+        logging.info('  - {}: \'{}\''.format(t.id, t.text))
+
+    return [t.id for t in tweets]
+
+def createAndwriteTweetsApiJson(folder, tweetsApiFile = 'tweetsApi.json'):
+    tweets = readTweetsFromFolder(folder)
+    tweetsFilter = [t for t in tweets if len(getPathsOfLinks(t)) > 0]
+    tree = TweetTree(tweetsFilter)
+    filePath = os.path.join(data_folder, tweetsApiFile)
+    logging.info('Writing new tweets API file: \'{}\''.format(tweetsApiFile))
+    with open(filePath, 'w') as json_file:
+        json.dump(tree.getApiJson(), json_file)
+
+def readTweetsApiJson(tweetsApiFile = 'tweetsApi.json'):
+    with open(os.path.join(data_folder, tweetsApiFile), 'r') as f:
+        return json.load(f)
+
+def readTweetIdsFromTwitter(ids):
+    api = get_api_app()
+    tweets = {}
+    for id in ids:
+        logging.info('Reading tweet info from twitter API: {}'.format(id))
+        tweets[id] = api.get_status(id, include_entities=True, tweet_mode='extended')._json
     return tweets
 
-def getPathsOfLinks(tweet, to = 'map.decarbnow.abteil.org'):
-    if not tweet['entities']['urls']:
-        return []
-    ul = [u['expanded_url'] for u in tweet['entities']['urls']]
-    return [u.split(to, 1)[1] for u in ul if to in u]
+def populateTweetsFolder(folder, ids_n, init = False, refresh = False):
+    d = os.path.join(tweets_folder, folder)
+    if not os.path.exists(d):
+        os.mkdir(d)
+    ids_e = [f[:-5] for f in os.listdir(d)]
+    if init:
+        for fp in os.listdir(d):
+            os.remove(os.path.join(folder, fp))
+        ids_e = []
 
-def tweetToApiFormat(tweet, add = {}):
-    hashtags = []
-    if tweet['entities']['hashtags']:
-        hashtags = [h['text'] for h in tweet['entities']['hashtags']]
-    paths = getPathsOfLinks(tweet)
-    return {
-        'url': paths[0],
-        'hashtags': hashtags,
-        **add
-    }
+    if refresh:
+        ids = ids_n
+    else:
+        ids = list(set(ids_n) - set(ids_e))
 
-class TweetTree:
-    def __init__(self, tweets):
-        tweetsDict = {t['id_str']: t for t in tweets}
-
-        tree = []
-        for tweet in tweetsDict.values():
-            if     tweet['in_reply_to_status_id_str'] \
-               and tweet['in_reply_to_status_id_str'] in tweetsDict \
-               and tweet['in_reply_to_user_id_str'] == tweet['user']['id_str']:
-                p = tweetsDict[tweet['in_reply_to_status_id_str']]
-                if not '_children' in p:
-                    p['_children'] = []
-                p['_children'].append(tweet)
-            else:
-                tree.append(tweet)
-
-        self.tree = tree
-
-    def __str__(self):
-        def printLeafs(tweets, i = 0):
-            a = []
-            for tweet in tweets:
-                a.append("{} - {} ({})".format('  ' * i, tweet['id_str'], tweet['created_at']))
-                if '_children' in tweet:
-                    a.extend(printLeafs(tweet['_children'], i + 1))
-            return a
-        return '\n'.join(printLeafs(self.tree))
-
-    def getApiJson(self):
-        apiJson = {};
-        for tweet in self.tree:
-            tweetId = tweet['id_str']
-            if '_children' in tweet and len(tweet['_children']) > 0:
-                story = tweetId
-                apiJson[tweetId] = tweetToApiFormat(tweet, {'story': story})
-                while '_children' in tweet and len(tweet['_children']) > 0:
-                    # ONLY FIRST CHILD
-                    tweet = tweet['_children'][0]
-                    tweetId = tweet['id_str']
-                    apiJson[tweetId] = tweetToApiFormat(tweet, {'story': story})
-            else:
-                apiJson[tweetId] = tweetToApiFormat(tweet)
-
-        return apiJson
+    tweets = readTweetIdsFromTwitter(ids)
+    for id, info in tweets.items():
+        with open(os.path.join(d, '{}.json'.format(id)), 'w') as json_file:
+            json.dump(info, json_file)
