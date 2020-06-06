@@ -15,12 +15,12 @@ Some functions require a twitter developer account, copy the file `twitter-auth.
 
 ```
 . env.sh
-./listener.py
+./runListener.py
 ```
 
 ## Webserver (API)
 
 ```
 . env.sh
-flask run
+./runApi.py
 ```
