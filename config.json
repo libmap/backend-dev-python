@@ -4,7 +4,7 @@
         "list": {
             "test": {
                 "listen": "map decarbnow abteil org",
-                "init": "map.decarbnow.abteil.org",
+                "link": "map.decarbnow.abteil.org",
                 "folder": "test",
                 "file": "test.json"
             }

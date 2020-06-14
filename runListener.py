@@ -4,9 +4,9 @@ import tweepy
 import os
 import logging
 
-from lib.tweets import *
-from lib.shared import data_folder, tweets_folder, base_folder, tweetsFetchSettings
 from lib.twitterAuth import get_auth_user
+from lib.tweets_aux import createAndwriteTweetsApiJson
+from lib.shared import data_folder, tweets_folder, base_folder, tweetsFetchSettings
 
 logging.basicConfig(
     level=logging.INFO,

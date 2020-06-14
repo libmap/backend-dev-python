@@ -17,7 +17,7 @@ logging.basicConfig(
 )
 
 # searchString = 'map.decarbnow.abteil.org'
-searchString = tweetsFetchSettings['init']
+searchString = tweetsFetchSettings['link']
 folder = tweetsFetchSettings['folder']
 
 ids = getOldTweetIds(searchString)
