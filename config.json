@@ -7,6 +7,12 @@
                 "link": "map.decarbnow.abteil.org",
                 "folder": "test",
                 "file": "test.json"
+            },
+            "live": {
+                "listen": "map decarbnow space",
+                "link": "map.decarbnow.space",
+                "folder": "live",
+                "file": "live.json"
             }
         }
     }

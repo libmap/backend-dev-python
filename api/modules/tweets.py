@@ -38,6 +38,8 @@ def info():
             if storyId not in stories:
                 stories[storyId] = []
             stories[storyId].append(Tweet.loadFromFile(id))
+        else:
+            stories[id] = [Tweet.loadFromFile(id)]
     return render_template('index.html.j2', stories = stories)
     # tt = TweetForest.fromFolder()
     # return Response(str(tt), mimetype='text/plain')
