@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from .modules import tweets
+from .modules import tweets, log
 
 
 def create_app(test_config=None):
@@ -8,5 +8,6 @@ def create_app(test_config=None):
     cors = CORS(app)
 
     app.register_blueprint(tweets.bp)
+    app.register_blueprint(log.bp)
 
     return app

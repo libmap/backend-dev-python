@@ -1,8 +1,6 @@
 from flask import Blueprint, jsonify, Response, render_template
-from flask_cors import CORS, cross_origin
+from flask_cors import cross_origin
 from datetime import datetime
-import json
-import logging
 
 from lib.tweets_base import readTweetsApiJson
 from lib.Tweet import Tweet
