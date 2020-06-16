@@ -36,12 +36,19 @@ def forest_show():
     forest = TweetForest.fromFolder()
     return Response(str(forest), mimetype='text/plain')
 
+@bp.route('/add/<int:id>')
+def add(id):
+    logging.warning('Manual invocation of adding tweet (id: {})!'.format(id))
+    tweet = Tweet.loadFromTwitter(id)
+    tweet.save()
+    return jsonify(tweet.data)
+
 @bp.route('/all')
 def all():
     tweets = readTweetsFromFolder()
     return render_template('index.all.html.j2', tweets = [Tweet(i) for i in tweets])
 
-@bp.route('/info')
+@bp.route('/stories')
 def info():
     tweets = readTweetsApiJson()
     stories = {};

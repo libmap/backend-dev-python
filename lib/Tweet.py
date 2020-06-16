@@ -36,6 +36,9 @@ class Tweet(object):
             **add
         }
 
+    def getData(self):
+        return self.data
+
     def toStringList(self):
         return [
             "{}, {}, {}".format(self.getUserName(), self.getTime(), self.getId()),
