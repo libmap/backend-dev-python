@@ -81,17 +81,23 @@ class Tweet(object):
         return self.isReply() and self.getUserId() == self.getReplyToUserId()
 
     def getHashtags(self):
+        hashtags = []
         if self.data['entities']['hashtags']:
-            return [h['text'] for h in self.data['entities']['hashtags']]
-        return []
+            hashtags.extend([h['text'] for h in self.data['entities']['hashtags']])
+        if 'extended_tweet' in self.data and self.data['extended_tweet']['entities']['hashtags']:
+            hashtags.extend([h['text'] for h in self.data['extended_tweet']['entities']['hashtags']])
+        return hashtags
 
     def hasHashtag(self, hashtag):
         return hashtag in self.getHashtags()
 
     def getLinks(self):
-        if not self.data['entities']['urls']:
-            return []
-        return [url['expanded_url'] for url in self.data['entities']['urls']]
+        urls = []
+        if self.data['entities']['urls']:
+            urls.extend([url['expanded_url'] for url in self.data['entities']['urls']])
+        if 'extended_tweet' in self.data and self.data['extended_tweet']['entities']['urls']:
+            urls.extend([url['expanded_url'] for url in self.data['extended_tweet']['entities']['urls']])
+        return urls
 
     def getPathOfLinksTo(self, to = tweetsFetchSettings['link']):
         return [u.split(to, 1)[1] for u in self.getLinks() if to in u]
