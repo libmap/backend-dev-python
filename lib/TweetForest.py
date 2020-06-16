@@ -9,6 +9,7 @@ class TweetForest(object):
     def fromFolder(folder = tweetsFetchSettings['folder']):
         tweets = [Tweet(j) for j in readTweetsFromFolder(folder)]
         tweets = filter(lambda t: t.hasLinkTo(), tweets)
+        tweets = filter(lambda t: not t.hasHashtag('private'), tweets)
         return TweetForest(tweets)
 
     def __init__(self, tweets):

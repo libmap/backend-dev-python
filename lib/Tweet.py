@@ -85,6 +85,9 @@ class Tweet(object):
             return [h['text'] for h in self.data['entities']['hashtags']]
         return []
 
+    def hasHashtag(self, hashtag):
+        return hashtag in getHashtags()
+
     def getLinks(self):
         if not self.data['entities']['urls']:
             return []

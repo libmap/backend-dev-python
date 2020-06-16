@@ -23,8 +23,8 @@ def tweet(id):
     t = Tweet.loadFromFile(id)
     return jsonify(t.data)
 
-@bp.route('/tree')
-def tree():
+@bp.route('/forest')
+def forest():
     tt = TweetForest.fromFolder()
     return Response(str(tt), mimetype='text/plain')
 
