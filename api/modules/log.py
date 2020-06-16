@@ -14,6 +14,6 @@ def logfile(file, format = 'plain'):
     with open(os.path.join(base_folder, 'log/{}.log'.format(file))) as f:
         lines = reversed(f.readlines())
         if format == 'html':
-            return render_template('index.log.html.j2', lines = lines, file = file, files = files)
+            return render_template('log.html.j2', lines = lines, file = file, files = files)
         else:
             return Response(''.join(lines), mimetype='text/plain')

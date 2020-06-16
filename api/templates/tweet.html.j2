@@ -1,0 +1,13 @@
+<div>
+    <strong>{{ tweet.getId() }}</strong>, {{ tweet.getUserName() }}, {{ tweet.getTime() }} (<a href="/tweets/{{ tweet.getId() }}" target="_blank">JSON</a>, <a href="{{ tweet.getUrl() }}" target="_blank">Twitter</a>)<br/>
+    <strong>Hastags:</strong> {{ ', '.join(tweet.getHashtags()) }}<br/>
+    <strong>Links:</strong> {{ tweet.hasLinkTo() }}
+    <ul>
+        {% for l in tweet.getLinks() %}
+            <li>
+                <a href="{{ l }}" target="_blank">{{ l }}</a>
+            </li>
+        {% endfor %}
+    </ul><br/>
+    {{ tweet.getText() }}<br/>
+</div>

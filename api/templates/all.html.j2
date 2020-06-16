@@ -1,0 +1,13 @@
+{% extends "index.html.j2" %}
+{% block title %}All Tweets{% endblock %}
+{% block content %}
+    <h1>Tweets</h1>
+    <ul>
+        {% for tweet in tweets %}
+            <li>
+                {% include 'tweet.html.j2' %}
+                <br/>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

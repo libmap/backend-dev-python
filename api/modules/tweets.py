@@ -46,7 +46,7 @@ def add(id):
 @bp.route('/all')
 def all():
     tweets = readTweetsFromFolder()
-    return render_template('index.all.html.j2', tweets = [Tweet(i) for i in tweets])
+    return render_template('all.html.j2', tweets = [Tweet(i) for i in tweets])
 
 @bp.route('/stories')
 def info():
@@ -58,6 +58,4 @@ def info():
             if storyId not in stories:
                 stories[storyId] = []
             stories[storyId].append(Tweet.loadFromFile(id))
-        else:
-            stories[id] = [Tweet.loadFromFile(id)]
-    return render_template('index.html.j2', stories = stories)
+    return render_template('stories.html.j2', stories = stories)

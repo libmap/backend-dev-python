@@ -1,41 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Decarbnow Backend</title>
-</head>
-<body>
-    <div class="container">
-        <h1>Stories</h1>
-        <ul>
-            {% for storyId, tweets in stories.items() %}
-                <li>
-                    <strong>{{ storyId }}, {{ tweets|count }} Entries</strong>
-                    <ul>
-                        {% for t in tweets %}
-                            <li>
-                                <div>
-                                    <strong>{{ t.getId() }}</strong>, {{ t.getUserName() }}, {{ t.getTime() }} (<a href="/tweets/{{ t.getId() }}" target="_blank">JSON</a>, <a href="{{ t.getUrl() }}" target="_blank">Twitter</a>)<br/>
-                                    <strong>Hastags:</strong> {{ ', '.join(t.getHashtags()) }}<br/>
-                                    {{ t.getText() }}<br/>
-                                    <strong>Links:</strong>
-                                    <ul>
-                                        {% for l in t.getLinks() %}
-                                            <li>
-                                                <a href="{{ l }}" target="_blank">{{ l }}</a>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                                <br/>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{% block title %}{% endblock %} - Decarbnow Backend</title>
+    </head>
+    <body  style="font-family: monospace">
+        <div id="header">
+            <a href='/log/listener/html'>log</a>
+            <a href='/tweets/all'>tweets all</a>
+            <a href='/tweets/stories'>tweets stories</a>
+            <a href='/tweets/forest' target="_blank">tweets forest</a>
+            <a href='/tweets/forest/create' target="_blank">renew api json</a>
+        </div>
+        <br/>
+        <div id="content">{% block content %}{% endblock %}</div>
+    </body>
 </html>

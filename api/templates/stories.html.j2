@@ -1,0 +1,20 @@
+{% extends "index.html.j2" %}
+{% block title %}Stories{% endblock %}
+{% block content %}
+    <h1>Stories</h1>
+    <ul>
+        {% for storyId, tweets in stories.items() %}
+            <li>
+                <strong>{{ storyId }}, {{ tweets|count }} Entries</strong>
+                <ul>
+                    {% for tweet in tweets %}
+                        <li>
+                            {% include 'tweet.html.j2' %}
+                            <br/>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
