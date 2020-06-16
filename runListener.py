@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!./venv/bin/python
 import json
 import tweepy
 import os

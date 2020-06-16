@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!./venv/bin/python
 import os
 from lib.shared import base_folder
 from api import create_app
