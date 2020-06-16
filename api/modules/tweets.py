@@ -4,7 +4,7 @@ import logging
 from flask import Blueprint, jsonify, Response, render_template
 from flask_cors import cross_origin
 
-from lib.tweets_base import readTweetsApiJson
+from lib.tweets_base import readTweetsApiJson, readTweetsFromFolder
 from lib.Tweet import Tweet
 from lib.TweetForest import TweetForest
 
@@ -35,6 +35,11 @@ def forest_create():
 def forest_show():
     forest = TweetForest.fromFolder()
     return Response(str(forest), mimetype='text/plain')
+
+@bp.route('/all')
+def all():
+    tweets = readTweetsFromFolder()
+    return render_template('index.all.html.j2', tweets = [Tweet(i) for i in tweets])
 
 @bp.route('/info')
 def info():
