@@ -86,7 +86,7 @@ class Tweet(object):
         return []
 
     def hasHashtag(self, hashtag):
-        return hashtag in getHashtags()
+        return hashtag in self.getHashtags()
 
     def getLinks(self):
         if not self.data['entities']['urls']:
