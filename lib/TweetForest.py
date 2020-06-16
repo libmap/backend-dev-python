@@ -1,5 +1,5 @@
 from .shared import tweetsFetchSettings
-from .tweets_base import readTweetsFromFolder
+from .tweets_base import readTweetsFromFolder, writeTweetsApiJson
 from .Tweet import Tweet
 
 class TweetForest(object):
@@ -49,3 +49,6 @@ class TweetForest(object):
                 apiJson[tweet.getId()] = tweet.asApiDict()
 
         return apiJson
+
+    def saveApiJson(self, file = tweetsFetchSettings['file']):
+        writeTweetsApiJson(self.asApiJson(), file)

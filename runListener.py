@@ -6,7 +6,7 @@ import logging
 
 from lib.shared import base_folder, tweetsFetchSettings
 from lib.twitter_auth import get_auth_user
-from lib.tweets_base import writeTweetsApiJson, writeTweetToFolder
+from lib.tweets_base import writeTweetToFolder
 from lib.TweetForest import TweetForest
 
 
@@ -23,7 +23,7 @@ searchString = tweetsFetchSettings['listen']
 
 def update():
     forest = TweetForest.fromFolder(tweetsFetchSettings['folder'])
-    writeTweetsApiJson(forest.asApiJson(), tweetsFetchSettings['file'])
+    forest.saveApiJson(tweetsFetchSettings['file'])
 
 class DecarbnowStreamListener(tweepy.StreamListener):
     def on_status(self, tweet):
