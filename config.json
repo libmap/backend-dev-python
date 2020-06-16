@@ -1,6 +1,6 @@
 {
     "tweetsFetchSettings": {
-        "default": "test",
+        "default": "live",
         "list": {
             "test": {
                 "listen": "map decarbnow abteil org",

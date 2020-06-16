@@ -5,7 +5,7 @@ import logging
 import GetOldTweets3 as got
 
 from lib.shared import base_folder, tweetsFetchSettings
-from lib.tweets import getOldTweetIds, populateTweetsFolder
+from lib.tweets_aux import getOldTweetIds, populateTweetsFolder
 
 logging.basicConfig(
     level=logging.INFO,

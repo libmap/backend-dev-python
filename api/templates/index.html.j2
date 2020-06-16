@@ -18,7 +18,7 @@
                             <li>
                                 <div>
                                     <strong>{{ t.getId() }}</strong>, {{ t.getUserName() }}, {{ t.getTime() }} (<a href="/tweets/{{ t.getId() }}" target="_blank">JSON</a>, <a href="{{ t.getUrl() }}" target="_blank">Twitter</a>)<br/>
-                                    <!--strong>Hastags:</strong> {{ ', '.join(t.getHashtags()) }}<br/-->
+                                    <strong>Hastags:</strong> {{ ', '.join(t.getHashtags()) }}<br/>
                                     {{ t.getText() }}<br/>
                                     <strong>Links:</strong>
                                     <ul>

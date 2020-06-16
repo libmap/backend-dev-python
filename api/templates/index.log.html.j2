@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Decarbnow Backend, Log {{ file }}</title>
+</head>
+<body>
+    <div class="container" style="font-family: monospace">
+        {% for f in files %}
+            <a href='/log/{{f}}/html'>{{ f }}</a>
+        {% endfor %}
+        <h1>Log: {{ file }}</h1>
+        <div style="margin-left: 20px;">
+            {% for line in lines %}
+                <span style="color: {% if '[ERROR]' in line %} #FF2222 {% elif '[WARNING]' in line %} #BBBB22 {% else %} #555555 {% endif %}">{{line}}</span></br>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

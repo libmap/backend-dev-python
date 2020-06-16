@@ -5,7 +5,6 @@ import GetOldTweets3 as got
 
 from .shared import tweets_folder, tweetsFetchSettings
 from .tweets_base import *
-from .TweetForest import TweetForest
 
 def getOldTweetIds(searchString = tweetsFetchSettings['link'], max = 100):
     tweetCriteria = got.manager.TweetCriteria().setQuerySearch(searchString)\
@@ -21,12 +20,6 @@ def getOldTweetIds(searchString = tweetsFetchSettings['link'], max = 100):
         logging.info('  - {}: \'{}\''.format(t.id, t.text))
 
     return [t.id for t in tweets]
-
-def createAndwriteTweetsApiJson(folder = tweetsFetchSettings['folder'], tweetsApiFile = tweetsFetchSettings['file']):
-    #tweets = readTweetsFromFolder(folder)
-    #tweetsFilter = [t for t in tweets if len(getPathsOfLinks(t)) > 0]
-    forest = TweetForest.fromFolder(folder)
-    writeTweetsApiJson(forest.asApiJson(), tweetsApiFile)
 
 def populateTweetsFolder(folder = tweetsFetchSettings['folder'], ids = [], init = False, refresh = False):
     d = os.path.join(tweets_folder, folder)

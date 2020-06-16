@@ -1,5 +1,5 @@
 from .shared import tweets_folder, tweetsFetchSettings
-from .twitterAuth import get_api_app
+from .twitter_auth import get_api_app
 from .tweets_base import *
 
 class Tweet(object):

@@ -3,7 +3,7 @@ import logging
 import json
 
 from .shared import tweets_folder, data_folder, tweetsFetchSettings
-from .twitterAuth import get_api_app
+from .twitter_auth import get_api_app
 
 def readTweetFromFolder(id, folder = tweetsFetchSettings['folder']):
     ff = os.path.join(tweets_folder, folder)
