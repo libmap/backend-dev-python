@@ -2,8 +2,13 @@
 
 ## Prerequisites
 
-Install required python packages (preferable in a virtual environment)
+Create virtual environment
 ```
+python -m venv venv
+```
+Activate environment and install required python packages
+```
+. venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -14,13 +19,11 @@ Some functions require a twitter developer account, copy the file `twitter-auth.
 ## Listener
 
 ```
-. env.sh
 ./runListener.py
 ```
 
-## Webserver (API)
+## API (Webserver)
 
 ```
-. env.sh
 ./runApi.py
 ```
