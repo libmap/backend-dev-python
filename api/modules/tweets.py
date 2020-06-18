@@ -23,18 +23,17 @@ def tweet(id):
     t = Tweet.loadFromFile(id)
     return jsonify(t.data)
 
-@bp.route('/forest/create')
+@bp.route('/forest')
+def forest_show():
+    return render_template('forest.html.j2', forest = TweetForest.fromFolder())
+    #return Response(str(forest), mimetype='text/plain')
+
+@bp.route('/forest/save')
 def forest_create():
     logging.warning('Manual invocation of creating forest!')
     forest = TweetForest.fromFolder()
     forest.saveApiJson()
-    return Response(str(forest), mimetype='text/plain')
-
-@bp.route('/forest')
-@bp.route('/forest/show')
-def forest_show():
-    forest = TweetForest.fromFolder()
-    return Response(str(forest), mimetype='text/plain')
+    return jsonify(readTweetsApiJson())
 
 @bp.route('/add/<int:id>')
 def add(id):

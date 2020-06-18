@@ -4,15 +4,35 @@
         <meta charset="utf-8">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{% block title %}{% endblock %} - Decarbnow Backend</title>
+        <title>{% block title %}{% endblock %} Decarbnow Backend</title>
     </head>
-    <body  style="font-family: monospace">
+    <style>
+        body {
+            font-family: monospace;
+            max-width:1200px;
+            margin: 20px auto;
+        }
+        #header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+        div.tweet.private {
+            color: #666;
+        }
+    </style>
+    <body>
         <div id="header">
-            <a href='/log/listener/html'>log</a>
-            <a href='/tweets/all'>tweets all</a>
-            <a href='/tweets/stories'>tweets stories</a>
-            <a href='/tweets/forest' target="_blank">tweets forest</a>
-            <a href='/tweets/forest/create' target="_blank">renew api json</a>
+            <div>
+                <a href='/tweets/all'>tweets</a>
+                <a href='/tweets/stories'>stories</a>
+                <a href='/tweets/forest'>forest</a>
+                <a href='/tweets' target="_blank">api json↗</a>
+                <a href='/log/listener/html'>log</a>
+            </div>
+            <div>
+                <a href='/tweets/forest/save' target="_blank">renew api json↗</a>
+            </div>
         </div>
         <br/>
         <div id="content">{% block content %}{% endblock %}</div>

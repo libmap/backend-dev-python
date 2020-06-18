@@ -1,7 +1,7 @@
-<div>
+<div class="tweet{% if 'private' in tweet.getHashtags() or 'hide' in tweet.getHashtags()  %} private{% endif %}">
     <strong>{{ tweet.getId() }}</strong>, {{ tweet.getUserName() }}, {{ tweet.getTime() }} (<a href="/tweets/{{ tweet.getId() }}" target="_blank">JSON</a>, <a href="{{ tweet.getUrl() }}" target="_blank">Twitter</a>)<br/>
     <strong>Hastags:</strong> {{ ', '.join(tweet.getHashtags()) }}<br/>
-    <strong>Links:</strong> {{ tweet.hasLinkTo() }}
+    <strong>Links:</strong> (Has decarbnow link: {{ tweet.hasLinkTo() }})
     <ul>
         {% for l in tweet.getLinks() %}
             <li>
@@ -9,5 +9,12 @@
             </li>
         {% endfor %}
     </ul><br/>
-    {{ tweet.getText() }}<br/>
+    {{ tweet.getText() }}<br/><br/>
+    <ul>
+        {% for tweet in tweet.getChildren() %}
+            <li>
+                {% include 'tweet.html.j2' %}
+            </li>
+        {% endfor %}
+    </ul>
 </div>

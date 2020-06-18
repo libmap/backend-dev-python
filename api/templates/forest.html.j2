@@ -1,9 +1,9 @@
 {% extends "index.html.j2" %}
-{% block title %}Tweets{% endblock %}
+{% block title %}Forest{% endblock %}
 {% block content %}
-    <h1>Tweets ({{ tweets|count }})</h1>
+    <h1>Forest ({{ forest.trunks|count }})</h1>
     <ul>
-        {% for tweet in tweets %}
+        {% for tweet in forest.trunks %}
             <li>
                 {% include 'tweet.html.j2' %}
                 <br/>

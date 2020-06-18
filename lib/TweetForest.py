@@ -3,7 +3,7 @@ from .tweets_base import readTweetsFromFolder, writeTweetsApiJson
 from .Tweet import Tweet
 
 class TweetForest(object):
-    forest = []
+    trunks = []
 
     @staticmethod
     def fromFolder(folder = tweetsFetchSettings['folder']):
@@ -13,7 +13,7 @@ class TweetForest(object):
         return TweetForest(tweets)
 
     def __init__(self, tweets):
-        self.forest = []
+        self.trunks = []
         tweetsDict = {t.getId(): t for t in tweets}
 
         for tweet in tweetsDict.values():
@@ -22,7 +22,7 @@ class TweetForest(object):
                     tweetsDict[tweet.getReplyToId()].addChild(tweet)
                     continue
 
-            self.forest.append(tweet)
+            self.trunks.append(tweet)
 
     def __str__(self):
         def printLeafs(tweets, i = 0):
@@ -33,11 +33,11 @@ class TweetForest(object):
                 if tweet.hasChildren():
                     a.extend(printLeafs(tweet.getChildren(), i + 1))
             return a
-        return '\n'.join(printLeafs(self.forest))
+        return '\n'.join(printLeafs(self.trunks))
 
     def asApiJson(self):
         apiJson = {};
-        for tweet in self.forest:
+        for tweet in self.trunks:
             if tweet.hasChildren():
                 story = tweet.getId()
                 apiJson[story] = tweet.asApiDict({'story': story})

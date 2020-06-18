@@ -1,7 +1,7 @@
 {% extends "index.html.j2" %}
 {% block title %}Stories{% endblock %}
 {% block content %}
-    <h1>Stories</h1>
+    <h1>Stories ({{ stories|count }})</h1>
     <ul>
         {% for storyId, tweets in stories.items() %}
             <li>
