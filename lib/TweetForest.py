@@ -7,7 +7,7 @@ class TweetForest(object):
 
     @staticmethod
     def fromFolder(folder = tweetsFetchSettings['folder']):
-        tweets = [Tweet(j) for j in readTweetsFromFolder(folder)]
+        tweets = Tweet.loadFromFolder(folder)
         tweets = filter(lambda t: t.hasLinkTo(), tweets)
         # tweets = filter(lambda t: not t.hasHashtag('private'), tweets)
         return TweetForest(tweets)

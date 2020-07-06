@@ -1,5 +1,5 @@
 <div class="tweet{% if 'private' in tweet.getHashtags() or 'hide' in tweet.getHashtags()  %} private{% endif %}">
-    <strong>{{ tweet.getId() }}</strong>, {{ tweet.getUserName() }}, {{ tweet.getTime() }} (<a href="/tweets/{{ tweet.getId() }}" target="_blank">JSON</a>, <a href="{{ tweet.getUrl() }}" target="_blank">Twitter</a>)<br/>
+    <strong>{{ tweet.getId() }}</strong>, {{ tweet.getUserName() }}, {{ tweet.getDateTime() }} (<a href="/tweets/{{ tweet.getId() }}" target="_blank">JSON</a>, <a href="{{ tweet.getUrl() }}" target="_blank">Twitter</a>)<br/>
     <strong>Hastags:</strong> {{ ', '.join(tweet.getHashtags()) }}<br/>
     <strong>Links:</strong> (Has decarbnow link: {{ tweet.hasLinkTo() }})
     <ul>

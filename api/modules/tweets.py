@@ -44,8 +44,11 @@ def add(id):
 
 @bp.route('/all')
 def all():
-    tweets = readTweetsFromFolder()
-    return render_template('all.html.j2', tweets = [Tweet(i) for i in tweets])
+    tweets = Tweet.loadFromFolder()
+    # tweets = readTweetsFromFolder()
+    tweets.sort(key = lambda x: x.getDateTime(), reverse = True)
+    # [Tweet(i) for i in tweets]
+    return render_template('all.html.j2', tweets = tweets)
 
 @bp.route('/stories')
 def info():

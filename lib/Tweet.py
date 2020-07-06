@@ -2,16 +2,23 @@ from .shared import tweets_folder, tweetsFetchSettings
 from .twitter_auth import get_api_app
 from .tweets_base import *
 
+from datetime import datetime
+
 class Tweet(object):
     data = None
 
     @staticmethod
     def loadFromFile(id, folder = tweetsFetchSettings['folder']):
-        return Tweet(readTweetFromFolder(id))
+        return Tweet(readTweetFromFolder(id, folder))
+
+    @staticmethod
+    def loadFromFolder(folder = tweetsFetchSettings['folder']):
+        return [Tweet(j) for j in readTweetsFromFolder(folder)]
 
     @staticmethod
     def loadFromTwitter(id):
-        return Tweet(readTweetFromTwitter(id))
+        return Tweet(readTweetFromTwitter(id, folder))
+
 
     def __init__(self, data):
         self.data = data
@@ -41,7 +48,7 @@ class Tweet(object):
 
     def toStringList(self):
         return [
-            "{}, {}, {}".format(self.getUserName(), self.getTime(), self.getId()),
+            "{}, {}, {}".format(self.getUserName(), self.getDateTime(), self.getId()),
             "# {}".format(', '.join(self.getHashtags())),
             "▶ {}".format(', '.join(self.getLinks())),
             "¶ {}".format(self.getText())
@@ -62,8 +69,8 @@ class Tweet(object):
     def getUserScreenName(self):
         return self.data['user']['screen_name']
 
-    def getTime(self):
-        return self.data['created_at'][:19]
+    def getDateTime(self):
+        return datetime.strptime(self.data['created_at'], '%a %b %d %H:%M:%S +0000 %Y')
 
     def getText(self):
         if 'full_text' in self.data:
