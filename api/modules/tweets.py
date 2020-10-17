@@ -28,7 +28,7 @@ def forest_show():
     return render_template('forest.html.j2', forest = TweetForest.fromFolder())
     #return Response(str(forest), mimetype='text/plain')
 
-@bp.route('/forest/save')
+@bp.route('/forest/renew')
 def forest_create():
     logging.warning('Manual invocation of creating forest!')
     forest = TweetForest.fromFolder()
