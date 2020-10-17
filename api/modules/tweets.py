@@ -1,10 +1,11 @@
 from datetime import datetime
 import logging
 
-from flask import Blueprint, jsonify, Response, render_template
+from flask import Blueprint, jsonify, Response, render_template, abort
 from flask_cors import cross_origin
 
-from lib.tweets_base import readTweetsApiJson, readTweetsFromFolder
+from lib.shared import authToken
+from lib.tweets_base import readTweetsApiJson
 from lib.Tweet import Tweet
 from lib.TweetForest import TweetForest
 
@@ -20,8 +21,8 @@ def root():
 
 @bp.route('/<int:id>')
 def tweet(id):
-    t = Tweet.loadFromFile(id)
-    return jsonify(t.data)
+    tweet = Tweet.loadFromFile(id)
+    return jsonify(tweet.data)
 
 @bp.route('/forest')
 def forest_show():
@@ -35,17 +36,27 @@ def forest_create():
     forest.saveApiJson()
     return jsonify(readTweetsApiJson())
 
-@bp.route('/add/<int:id>')
-def add(id):
+@bp.route('/add/<int:id>/auth/<string:auth>')
+def add(id, auth):
+    if auth != authToken:
+        abort(401)
     logging.warning('Manual invocation of adding tweet (id: {})!'.format(id))
     tweet = Tweet.loadFromTwitter(id)
     tweet.save()
     return jsonify(tweet.data)
 
+@bp.route('/delete/<int:id>/auth/<string:auth>')
+def delete(id, auth):
+    if auth != authToken:
+        abort(401)
+    logging.warning('Manual invocation of deleting tweet (id: {})!'.format(id))
+    tweet = Tweet.loadFromFile(id)
+    tweet.delete()
+    return jsonify(tweet.data)
+
 @bp.route('/all')
 def all():
     tweets = Tweet.loadFromFolder()
-    # tweets = readTweetsFromFolder()
     tweets.sort(key = lambda x: x.getDateTime(), reverse = True)
     # [Tweet(i) for i in tweets]
     return render_template('all.html.j2', tweets = tweets)

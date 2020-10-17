@@ -15,6 +15,10 @@ def writeTweetToFolder(tweet, folder = tweetsFetchSettings['folder']):
     with open(os.path.join(ff, '{}.json'.format(tweet['id_str'])), 'w') as f:
         json.dump(tweet, f)
 
+def deleteTweetFromFolder(id, folder = tweetsFetchSettings['folder']):
+    ff = os.path.join(tweets_folder, folder)
+    os.remove(os.path.join(ff, '{}.json'.format(id)))
+
 def readTweetsFromFolder(folder = tweetsFetchSettings['folder']):
     ff = os.path.join(tweets_folder, folder)
     tweets = [readTweetFromFolder(f[:-5], folder) for f in os.listdir(ff) if f[-5:] == '.json']

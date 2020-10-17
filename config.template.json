@@ -1,4 +1,5 @@
 {
+    "authToken": "xxx",
     "tweetsFetchSettings": {
         "default": "live",
         "list": {

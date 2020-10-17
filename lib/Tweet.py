@@ -17,7 +17,7 @@ class Tweet(object):
 
     @staticmethod
     def loadFromTwitter(id):
-        return Tweet(readTweetFromTwitter(id, folder))
+        return Tweet(readTweetFromTwitter(id))
 
 
     def __init__(self, data):
@@ -26,6 +26,9 @@ class Tweet(object):
 
     def save(self, folder = tweetsFetchSettings['folder']):
         writeTweetToFolder(self.data, folder)
+
+    def delete(self, folder = tweetsFetchSettings['folder']):
+        deleteTweetFromFolder(self.getId(), folder)
 
     def addChild(self, tweet):
         self.children.append(tweet)
