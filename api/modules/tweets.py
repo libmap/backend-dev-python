@@ -33,6 +33,7 @@ def forest_show():
 @bp.route('/forest/renew')
 def forest_create():
     logging.warning('Manual invocation of creating forest!')
+    # renew forest
     forest = TweetForest.fromFolder()
     forest.saveApiJson()
     return jsonify(readTweetsApiJson())
@@ -42,6 +43,9 @@ def add(id):
     logging.warning('Manual invocation of adding tweet (id: {})!'.format(id))
     tweet = Tweet.loadFromTwitter(id)
     tweet.save()
+    # renew forest
+    forest = TweetForest.fromFolder()
+    forest.saveApiJson()
     return jsonify({
         'message': 'added',
         'tweet': {
@@ -55,6 +59,9 @@ def delete(id):
     logging.warning('Manual invocation of deleting tweet (id: {})!'.format(id))
     tweet = Tweet.loadFromFile(id)
     tweet.delete()
+    # renew forest
+    forest = TweetForest.fromFolder()
+    forest.saveApiJson()
     return jsonify({
         'message': 'deleted',
         'tweet': {
