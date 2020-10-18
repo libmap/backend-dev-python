@@ -38,7 +38,7 @@ def forest_create():
     return jsonify(readTweetsApiJson())
 
 @bp.route('/add/<int:id>')
-def add(id, auth):
+def add(id):
     logging.warning('Manual invocation of adding tweet (id: {})!'.format(id))
     tweet = Tweet.loadFromTwitter(id)
     tweet.save()
@@ -51,7 +51,7 @@ def add(id, auth):
     })
 
 @bp.route('/delete/<int:id>')
-def delete(id, auth):
+def delete(id):
     logging.warning('Manual invocation of deleting tweet (id: {})!'.format(id))
     tweet = Tweet.loadFromFile(id)
     tweet.delete()
