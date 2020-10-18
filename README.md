@@ -12,9 +12,10 @@ Activate environment and install required python packages
 pip install -r requirements.txt
 ```
 
-### Twitter Credentials
+### Config
 
-Some functions require a twitter developer account, copy the file `twitter-auth.template.json` to `twitter-auth.json` and put there your credentials. 
+You have to copy the `config.template.json` to `config.json` and adjust it to your needs. (Twitter Credentials, ...)
+
 
 ## Listener
 
