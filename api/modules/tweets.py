@@ -3,8 +3,8 @@ import logging
 
 from flask import Blueprint, jsonify, Response, render_template, abort
 from flask_cors import cross_origin
+from .auth import login_exempt
 
-from lib.shared import authToken
 from lib.tweets_base import readTweetsApiJson
 from lib.Tweet import Tweet
 from lib.TweetForest import TweetForest
@@ -13,6 +13,7 @@ bp = Blueprint('tweets', __name__, url_prefix='/tweets')
 
 @bp.route('/')
 @cross_origin()
+@login_exempt
 def root():
     return jsonify({
         'date': int(datetime.timestamp(datetime.now())),
@@ -36,23 +37,31 @@ def forest_create():
     forest.saveApiJson()
     return jsonify(readTweetsApiJson())
 
-@bp.route('/add/<int:id>/auth/<string:auth>')
+@bp.route('/add/<int:id>')
 def add(id, auth):
-    if auth != authToken:
-        abort(401)
     logging.warning('Manual invocation of adding tweet (id: {})!'.format(id))
     tweet = Tweet.loadFromTwitter(id)
     tweet.save()
-    return jsonify(tweet.data)
+    return jsonify({
+        'message': 'added',
+        'tweet': {
+            'id': id,
+            'data': tweet.data
+        }
+    })
 
-@bp.route('/delete/<int:id>/auth/<string:auth>')
+@bp.route('/delete/<int:id>')
 def delete(id, auth):
-    if auth != authToken:
-        abort(401)
     logging.warning('Manual invocation of deleting tweet (id: {})!'.format(id))
     tweet = Tweet.loadFromFile(id)
     tweet.delete()
-    return jsonify(tweet.data)
+    return jsonify({
+        'message': 'deleted',
+        'tweet': {
+            'id': id,
+            'data': tweet.data
+        }
+    })
 
 @bp.route('/all')
 def all():
