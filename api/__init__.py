@@ -3,12 +3,14 @@ from flask_cors import CORS
 from .modules import tweets, log
 from .modules.auth import login_exempt
 from lib.shared import authToken, secretKey
+from datetime import timedelta
 
-def create_app(test_config=None):
+def create_app(test_config = None):
     app = Flask(__name__)
-    cors = CORS(app)
+    app.config['SECRET_KEY'] = secretKey
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=100)
 
-    app.secret_key = secretKey
+    cors = CORS(app)
 
     app.register_blueprint(tweets.bp)
     app.register_blueprint(log.bp)
@@ -18,7 +20,7 @@ def create_app(test_config=None):
         return render_template('index.html.j2')
 
     @app.before_request
-    def check_auth_token():
+    def check_auth():
         if not request.endpoint or request.endpoint.rsplit('.', 1)[-1] == 'static':
            return
         view = current_app.view_functions[request.endpoint]
@@ -34,6 +36,7 @@ def create_app(test_config=None):
     @login_exempt
     def authenticate(token):
         if token == authToken:
+            session.permanent = True
             session['loggedIn'] = True
             return "Authenticated via /authenticate/TOKEN"
         else:
