@@ -1,6 +1,16 @@
 {
     "authToken": "xxx",
     "secretKey": "xxx",
+    "twitter": {
+        "api": {
+            "key": "xxx",
+            "secret": "xxx"
+        },
+        "access": {
+            "token": "xxx",
+            "token-secret": "xxx"
+        }
+    },
     "tweetsFetchSettings": {
         "default": "live",
         "list": {

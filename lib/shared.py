@@ -11,5 +11,7 @@ with open(os.path.join(base_folder, 'config.json'), 'r') as f:
     config = json.load(f)
 
 tweetsFetchSettings = config['tweetsFetchSettings']['list'][config['tweetsFetchSettings']['default']]
+
 authToken = config['authToken']
 secretKey = config['secretKey']
+twitterAuth = config['twitter']
