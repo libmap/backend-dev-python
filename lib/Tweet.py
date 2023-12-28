@@ -86,6 +86,9 @@ class Tweet(object):
     def getText(self):
         if 'full_text' in self.data:
             return self.data['full_text']
+        elif 'extended_tweet' in self.data:
+            if 'full_text' in self.data['extended_tweet']:
+                return self.data['extended_tweet']['full_text']
         elif 'text' in self.data:
             return self.data['text']
 
