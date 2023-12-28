@@ -43,6 +43,11 @@ class Tweet(object):
         return {
             'url': self.getPathOfLinksTo()[0],
             'hashtags': self.getHashtags(),
+            'timestamp': str(self.getDateTime()),
+            'content': self.getText(),
+            'account': self.getUserName(),
+            'display_name': self.getUserScreenName(),
+            'avatar': self.getUserImageHttps(),
             **add
         }
 
@@ -71,6 +76,9 @@ class Tweet(object):
 
     def getUserScreenName(self):
         return self.data['user']['screen_name']
+    
+    def getUserImageHttps(self):
+        return self.data['user']['profile_image_url_https']
 
     def getDateTime(self):
         return datetime.strptime(self.data['created_at'], '%a %b %d %H:%M:%S +0000 %Y')
