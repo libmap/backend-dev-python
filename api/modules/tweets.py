@@ -20,6 +20,7 @@ def root():
         'tweets': readTweetsApiJson()
     })
 
+
 @bp.route('/<int:id>')
 def tweet(id):
     tweet = Tweet.loadFromFile(id)

@@ -48,6 +48,7 @@ class Tweet(object):
             'account': self.getUserName(),
             'display_name': self.getUserScreenName(),
             'avatar': self.getUserImageHttps(),
+            'media': self.getMedia(),
             **add
         }
 
@@ -83,12 +84,24 @@ class Tweet(object):
     def getDateTime(self):
         return datetime.strptime(self.data['created_at'], '%a %b %d %H:%M:%S +0000 %Y')
 
+    def getMedia(self):
+        if 'extended_tweet' in self.data and 'extended_entities' in self.data['extended_tweet'] and 'media' in self.data['extended_tweet']['extended_entities']:
+            return([item['media_url_https'] for item in self.data['extended_tweet']['extended_entities']['media']])
+        elif 'extended_entities' in self.data and 'media' in self.data['extended_entities']:
+            return([item['media_url_https'] for item in self.data['extended_entities']['media']])
+        elif 'quoted_status' in self.data and 'extended_entities' in self.data['quoted_status'] and 'media' in self.data['quoted_status']['extended_entities']:
+            return([item['media_url_https'] for item in self.data['quoted_status']['extended_entities']['media']])
+        elif 'quoted_status' in self.data and 'extended_tweet' in self.data['quoted_status'] and 'extended_entities' in self.data['quoted_status']['extended_tweet'] and 'media' in self.data['quoted_status']['extended_tweet']['extended_entities']:
+            return([item['media_url_https'] for item in self.data['quoted_status']['extended_tweet']['extended_entities']['media']])
+
     def getText(self):
         if 'full_text' in self.data:
             return self.data['full_text']
         elif 'extended_tweet' in self.data:
             if 'full_text' in self.data['extended_tweet']:
                 return self.data['extended_tweet']['full_text']
+        elif 'retweeted_status' in self.data and 'extended_tweet' in self.data['retweeted_status'] and self.data['retweeted_status']['extended_tweet']['full_text']:
+            return self.data['retweeted_status']['extended_tweet']['full_text']
         elif 'text' in self.data:
             return self.data['text']
 
@@ -126,7 +139,7 @@ class Tweet(object):
     def getPathOfLinksTo(self, to = tweetsFetchSettings['link']):
         return [u.split(to, 1)[1] for u in self.getLinks() if to in u]
 
-    def hasLinkTo(self, to = tweetsFetchSettings['link']):
+    def hasLinkTo(self, to = f"{tweetsFetchSettings['link']}/@"):
         return len(self.getPathOfLinksTo(to)) > 0
 
     def getUrl(self):
