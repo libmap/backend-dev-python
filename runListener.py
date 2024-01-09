@@ -39,6 +39,7 @@ def update():
 class DecarbnowStreamListener(StreamListener):
     def __init__(self, mastodon):
         self.mastodon = mastodon
+        self.receivedHeartbeat = False
 
     def stream_with_reconnection(self):
         retry_delay = 5
@@ -50,6 +51,7 @@ class DecarbnowStreamListener(StreamListener):
                 self.mastodon.stream_public(self)
                 break
             except Exception as e:
+                self.receivedHeartbeat = False
                 print("Error: ", e)
                 print("Versuche, die Verbindung nach 10 Sekunden erneut herzustellen...")
                 retry_count += 1
@@ -83,7 +85,9 @@ class DecarbnowStreamListener(StreamListener):
             update()
 
     def handle_heartbeat(self):
-        print("Received a heartbeat from the server!")
+        if not self.receivedHeartbeat:
+            print("Received a heartbeat from the server!")
+            self.receivedHeartbeat = True
 
     def on_abort(self, status_code):
         logging.warning('Listener got error, status code: {}'.format(status_code))
