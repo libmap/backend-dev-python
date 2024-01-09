@@ -86,7 +86,7 @@ class DecarbnowStreamListener(StreamListener):
 
     def handle_heartbeat(self):
         if not self.receivedHeartbeat:
-            print("Received a heartbeat from the server!")
+            logging.info("Connected to server. Listening.")
             self.receivedHeartbeat = True
 
     def on_abort(self, status_code):
