@@ -42,7 +42,7 @@ class DecarbnowStreamListener(StreamListener):
         self.receivedHeartbeat = False
 
     def stream_with_reconnection(self):
-        retry_delay = 5
+        retry_delay = 10
         max_retries = 10
         retry_count = 0
 
@@ -52,8 +52,8 @@ class DecarbnowStreamListener(StreamListener):
                 break
             except Exception as e:
                 self.receivedHeartbeat = False
-                print("Error: ", e)
-                print("Versuche, die Verbindung nach 10 Sekunden erneut herzustellen...")
+                logging.warning("Error: ", e)
+                logging.info("Versuche, die Verbindung nach 10 Sekunden erneut herzustellen...")
                 retry_count += 1
                 time.sleep(retry_delay)
 
