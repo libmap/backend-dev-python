@@ -1,6 +1,6 @@
 from flask import Flask, current_app, render_template, request, session
 from flask_cors import CORS
-from .modules import tweets, log
+from .modules import toots, log
 from .modules.auth import login_exempt
 from lib.shared import authToken, secretKey
 from datetime import timedelta
@@ -12,7 +12,7 @@ def create_app(test_config = None):
 
     cors = CORS(app)
 
-    app.register_blueprint(tweets.bp)
+    app.register_blueprint(toots.bp)
     app.register_blueprint(log.bp)
 
     @app.route('/')

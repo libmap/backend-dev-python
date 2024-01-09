@@ -1,12 +1,11 @@
-import json
 import os
 import logging
 import GetOldTweets3 as got
 
-from .shared import tweets_folder, tweetsFetchSettings
-from .tweets_base import *
+from .shared import toots_folder, tootsFetchSettings
+from .mastodon_base import *
 
-def getOldTweetIds(searchString = tweetsFetchSettings['link'], max = 100):
+def getOldTweetIds(searchString = tootsFetchSettings['link'], max = 100):
     tweetCriteria = got.manager.TweetCriteria().setQuerySearch(searchString)\
                                                .setMaxTweets(max)
     logging.info('Loading old tweet ids from twitter (GoT):')
@@ -21,8 +20,8 @@ def getOldTweetIds(searchString = tweetsFetchSettings['link'], max = 100):
 
     return [t.id for t in tweets]
 
-def populateTweetsFolder(folder = tweetsFetchSettings['folder'], ids = [], init = False, refresh = False):
-    d = os.path.join(tweets_folder, folder)
+def populateTweetsFolder(folder = tootsFetchSettings['folder'], ids = [], init = False, refresh = False):
+    d = os.path.join(toots_folder, folder)
     if not os.path.exists(d):
         os.mkdir(d)
     ids_e = [f[:-5] for f in os.listdir(d)]
@@ -37,5 +36,5 @@ def populateTweetsFolder(folder = tweetsFetchSettings['folder'], ids = [], init 
         ids_f = list(set(ids) - set(ids_e))
 
     for id in ids_f:
-        info = readTweetFromTwitter(id)
-        writeTweetToFolder(info, folder)
+        info = readTootFromMastodon(id)
+        writeTootToFolder(info, folder)

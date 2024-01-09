@@ -1,11 +1,10 @@
 #!./venv/bin/python
-import json
 import os
 import logging
 import GetOldTweets3 as got
 
 from lib.shared import base_folder, tweetsFetchSettings
-from lib.tweets_aux import getOldTweetIds, populateTweetsFolder
+from lib.toots_aux import getOldTweetIds, populateTweetsFolder
 
 logging.basicConfig(
     level=logging.INFO,
