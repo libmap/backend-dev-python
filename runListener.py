@@ -53,7 +53,7 @@ class MastodonStreamListener(StreamListener):
             except Exception as e:
                 self.receivedHeartbeat = False
                 logging.warning("Error: ", e)
-                logging.info("Trying to reconnect after " + retry_delay + "seconds.")
+                logging.info("Trying to reconnect after " + str(retry_delay) + "seconds.")
                 retry_count += 1
                 time.sleep(retry_delay)
 
@@ -92,7 +92,7 @@ class MastodonStreamListener(StreamListener):
 
     def on_abort(self, status_code):
         logging.warning('Listener got error, status code: {}'.format(status_code))
-        return True
+        self.stream_with_reconnection()
 
 logging.info('Init Listener:')
 logging.info('  - Toots Folder: \'{}\''.format(tootsFetchSettings['folder']))
