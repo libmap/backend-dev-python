@@ -16,9 +16,36 @@ bp = Blueprint('tweets', __name__, url_prefix='/tweets')
 @cross_origin()
 @login_exempt
 def root():
+    # Read the current tweets from the API or other source
+    current_tweets = readTootsApiJson()
+
+    # Read additional tweets from file_tweets.json
+    try:
+        with open('data/file_tweets.json', 'r') as file:
+            file_tweets_data = json.load(file)
+            # Check if the data is a dictionary
+            if isinstance(file_tweets_data, dict):
+                # If the current tweets are also a dictionary, update it
+                if isinstance(current_tweets, dict):
+                    current_tweets.update(file_tweets_data)
+                # If the current tweets are a list, convert the dictionary to a list and extend it
+                elif isinstance(current_tweets, list):
+                    current_tweets.extend(file_tweets_data.values())
+                else:
+                    raise ValueError("The current tweets are neither a list nor a dictionary.")
+            else:
+                raise ValueError("The contents of file_tweets.json are not a dictionary")
+    except FileNotFoundError:
+        logging.error("The file file_tweets.json was not found.")
+    except json.JSONDecodeError:
+        logging.error("The file file_tweets.json does not contain valid JSON.")
+    except ValueError as e:
+        logging.error(e)
+
+    # Return the combined data as a JSON response
     return Response(json.dumps({
         'date': int(datetime.timestamp(datetime.now())),
-        'tweets': readTootsApiJson()
+        'tweets': current_tweets
     }), mimetype='application/json')
 
 
@@ -37,7 +64,35 @@ def forest_create():
     logging.warning('Manual invocation of creating forest!')
     forest = TootForest.fromFolder()
     forest.saveApiJson()
-    return Response(json.dumps(readTootsApiJson()), mimetype='application/json')
+
+    # Read the current tweets from the API or other source
+    current_tweets = readTootsApiJson()
+
+    # Read additional tweets from file_tweets.json
+    try:
+        with open('data/file_tweets.json', 'r') as file:
+            file_tweets_data = json.load(file)
+            # Check if the data is a dictionary
+            if isinstance(file_tweets_data, dict):
+                # If the current tweets are also a dictionary, update it
+                if isinstance(current_tweets, dict):
+                    current_tweets.update(file_tweets_data)
+                # If the current tweets are a list, convert the dictionary to a list and extend it
+                elif isinstance(current_tweets, list):
+                    current_tweets.extend(file_tweets_data.values())
+                else:
+                    raise ValueError("The current tweets are neither a list nor a dictionary.")
+            else:
+                raise ValueError("The contents of file_tweets.json are not a dictionary")
+    except FileNotFoundError:
+        logging.error("The file file_tweets.json was not found.")
+    except json.JSONDecodeError:
+        logging.error("The file file_tweets.json does not contain valid JSON.")
+    except ValueError as e:
+        logging.error(e)
+
+    # Return the combined data as a JSON response
+    return Response(json.dumps(current_tweets), mimetype='application/json')
 
 @bp.route('/add/<int:id>')
 def add(id):

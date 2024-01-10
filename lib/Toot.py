@@ -59,6 +59,7 @@ class Toot(object):
             'display_name': self.getUserScreenName(),
             'avatar': self.getUserImageHttps(),
             'media': self.getMedia(),
+            'source': 'mastodon.social',
             **add
         }
 

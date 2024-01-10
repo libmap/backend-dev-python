@@ -49,11 +49,12 @@ class MastodonStreamListener(StreamListener):
         while retry_count < max_retries:
             try:
                 self.mastodon.stream_public(self)
+                retry_count = 0
                 break
             except Exception as e:
                 self.receivedHeartbeat = False
                 logging.warning("Error: ", e)
-                logging.info("Trying to reconnect after " + str(retry_delay) + "seconds.")
+                logging.info("Trying to reconnect after " + str(retry_delay) + " seconds.")
                 retry_count += 1
                 time.sleep(retry_delay)
 
@@ -88,7 +89,6 @@ class MastodonStreamListener(StreamListener):
         if not self.receivedHeartbeat:
             logging.info("Connected to server. Listening.")
             self.receivedHeartbeat = True
-            retry_count = 0
 
     def on_abort(self, status_code):
         logging.warning('Listener got error, status code: {}'.format(status_code))
