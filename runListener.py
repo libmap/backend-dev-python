@@ -36,7 +36,7 @@ def update():
     forest = TootForest.fromFolder(tootsFetchSettings['folder'])
     forest.saveApiJson(tootsFetchSettings['file'])
 
-class DecarbnowStreamListener(StreamListener):
+class MastodonStreamListener(StreamListener):
     def __init__(self, mastodon):
         self.mastodon = mastodon
         self.receivedHeartbeat = False
@@ -53,7 +53,7 @@ class DecarbnowStreamListener(StreamListener):
             except Exception as e:
                 self.receivedHeartbeat = False
                 logging.warning("Error: ", e)
-                logging.info("Versuche, die Verbindung nach 10 Sekunden erneut herzustellen...")
+                logging.info("Trying to reconnect after " + retry_delay + "seconds.")
                 retry_count += 1
                 time.sleep(retry_delay)
 
@@ -88,6 +88,7 @@ class DecarbnowStreamListener(StreamListener):
         if not self.receivedHeartbeat:
             logging.info("Connected to server. Listening.")
             self.receivedHeartbeat = True
+            retry_count = 0
 
     def on_abort(self, status_code):
         logging.warning('Listener got error, status code: {}'.format(status_code))
@@ -97,7 +98,7 @@ logging.info('Init Listener:')
 logging.info('  - Toots Folder: \'{}\''.format(tootsFetchSettings['folder']))
 logging.info('  - Search String: \'{}\''.format(searchString))
 
-listener = DecarbnowStreamListener(mastodon)
+listener = MastodonStreamListener(mastodon)
 
 logging.info('Init Toots API File ...')
 update()
