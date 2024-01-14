@@ -16,9 +16,7 @@ mastodon = get_auth_user()
 keyword = tootsFetchSettings['listen']
 
 dir_path = os.path.join(toots_folder, tootsFetchSettings['folder'])
-# Get all files in directory
 files = os.listdir(dir_path)
-# Extract ids (filenames without .json)
 existing_ids = [os.path.splitext(file)[0] for file in files]
 
 logging.basicConfig(
@@ -33,8 +31,14 @@ logging.basicConfig(
 searchString = tootsFetchSettings['listen']
 
 def update():
+    global existing_ids
     forest = TootForest.fromFolder(tootsFetchSettings['folder'])
     forest.saveApiJson(tootsFetchSettings['file'])
+    
+    # Update the global existing_ids variable
+    files = os.listdir(dir_path)
+    existing_ids = [os.path.splitext(file)[0] for file in files]
+
 
 class MastodonStreamListener(StreamListener):
     def __init__(self, mastodon):
@@ -60,7 +64,7 @@ class MastodonStreamListener(StreamListener):
 
     def on_update(self, toot):     
         if keyword in toot['content']:
-            id = toot['id']
+            id = str(toot['id'])  # Convert the ID to a string, if it's not already
             logging.info('Listener got new toot: {}'.format(id))
             writeTootToFolder(toot, tootsFetchSettings['folder'])
             update()
@@ -68,7 +72,7 @@ class MastodonStreamListener(StreamListener):
     def on_status_update(self, toot):     
         if keyword in toot['content']:
             id = toot['id']
-            logging.info('Listener got new toot: {}'.format(id))
+            logging.info('Listener got update of toot: {}'.format(id))
             writeTootToFolder(toot, tootsFetchSettings['folder'])
             update()
 
@@ -82,7 +86,6 @@ class MastodonStreamListener(StreamListener):
 
             writeTootToArchive(toot, tootsFetchSettings['folder'])
             deleteTootFromFolder(status_id, tootsFetchSettings['folder'])
-
             update()
 
     def handle_heartbeat(self):
