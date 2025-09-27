@@ -15,17 +15,17 @@ class DateTimeEncoder(json.JSONEncoder):
 
 def readTootFromFolder(id, folder = tootsFetchSettings['folder']):
     ff = os.path.join(toots_folder, folder)
-    with open(os.path.join(ff, '{}.json'.format(id)), 'r') as f:
+    with open(os.path.join(ff, '{}.json'.format(id)), 'r', encoding='utf-8') as f:
         return json.load(f)
 
 def writeTootToFolder(toot, folder = tootsFetchSettings['folder']):
     ff = os.path.join(toots_folder, folder)
-    with open(os.path.join(ff, '{}.json'.format(toot['id'])), 'w') as f:
+    with open(os.path.join(ff, '{}.json'.format(toot['id'])), 'w', encoding='utf-8') as f:
         json.dump(toot, f, cls=DateTimeEncoder)
 
 def writeTootToArchive(toot, folder = tootsFetchSettings['folder']):
     ff = os.path.join(toots_folder, folder, "archive")
-    with open(os.path.join(ff, '{}.json'.format(toot['id'])), 'w') as f:
+    with open(os.path.join(ff, '{}.json'.format(toot['id'])), 'w', encoding='utf-8') as f:
         json.dump(toot, f, cls=DateTimeEncoder)
 
 def deleteTootFromFolder(id, folder = tootsFetchSettings['folder']):
@@ -47,9 +47,9 @@ def readTootFromMastodon(id):
 def writeTootsApiJson(data, tootsApiFile = tootsFetchSettings['file']):
     filePath = os.path.join(data_folder, tootsApiFile)
     logging.info('Writing new toots API file: \'{}\''.format(tootsApiFile))
-    with open(filePath, 'w') as f:
+    with open(filePath, 'w', encoding='utf-8') as f:
         json.dump(data, f)
 
 def readTootsApiJson(tootsApiFile = tootsFetchSettings['file']):
-    with open(os.path.join(data_folder, tootsApiFile), 'r') as f:
+    with open(os.path.join(data_folder, tootsApiFile), 'r', encoding='utf-8') as f:
         return json.load(f)

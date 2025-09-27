@@ -3,7 +3,7 @@ from .shared import base_folder, mastodonAuth
 import json
 import os
 
-with open(os.path.join(base_folder, 'config.json'), 'r') as f:
+with open(os.path.join(base_folder, 'config.json'), 'r', encoding='utf-8') as f:
     config = json.load(f)
 
 def get_auth_user():

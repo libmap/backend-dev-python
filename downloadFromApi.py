@@ -21,7 +21,7 @@ data_folder = "data"
 os.makedirs(data_folder, exist_ok=True)
 
 # Load tweet IDs from fromAPI.json
-with open(os.path.join(data_folder, "fromAPI.json"), "r") as json_file:
+with open(os.path.join(data_folder, "fromAPI.json"), "r", encoding='utf-8') as json_file:
     tweet_data = json.load(json_file)
     tweet_ids = tweet_data.get("tweets", {}).keys()
 
