@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 import json
+import os
 
 from flask import Blueprint, jsonify, Response, render_template, abort
 from flask_cors import cross_origin
@@ -9,6 +10,7 @@ from .auth import login_exempt
 from lib.mastodon_base import readTootsApiJson
 from lib.Toot import Toot
 from lib.TootForest import TootForest
+from lib.shared import data_folder
 
 bp = Blueprint('tweets', __name__, url_prefix='/tweets')
 
@@ -19,9 +21,9 @@ def root():
     # Read the current tweets from the API or other source
     current_tweets = readTootsApiJson()
 
-    # Read additional tweets from file_tweets.json
+    # Read additional tweets from file_tweets_transformed.json
     try:
-        with open('data/file_tweets.json', 'r') as file:
+        with open(os.path.join(data_folder, 'file_tweets_transformed.json'), 'r', encoding='utf-8') as file:
             file_tweets_data = json.load(file)
             # Check if the data is a dictionary
             if isinstance(file_tweets_data, dict):
@@ -34,11 +36,11 @@ def root():
                 else:
                     raise ValueError("The current tweets are neither a list nor a dictionary.")
             else:
-                raise ValueError("The contents of file_tweets.json are not a dictionary")
+                raise ValueError("The contents of file_tweets_transformed.json are not a dictionary")
     except FileNotFoundError:
-        logging.error("The file file_tweets.json was not found.")
+        logging.error("The file file_tweets_transformed.json was not found.")
     except json.JSONDecodeError:
-        logging.error("The file file_tweets.json does not contain valid JSON.")
+        logging.error("The file file_tweets_transformed.json does not contain valid JSON.")
     except ValueError as e:
         logging.error(e)
 
@@ -68,9 +70,9 @@ def forest_create():
     # Read the current tweets from the API or other source
     current_tweets = readTootsApiJson()
 
-    # Read additional tweets from file_tweets.json
+    # Read additional tweets from file_tweets_transformed.json
     try:
-        with open('data/file_tweets.json', 'r') as file:
+        with open(os.path.join(data_folder, 'file_tweets_transformed.json'), 'r', encoding='utf-8') as file:
             file_tweets_data = json.load(file)
             # Check if the data is a dictionary
             if isinstance(file_tweets_data, dict):
@@ -83,11 +85,11 @@ def forest_create():
                 else:
                     raise ValueError("The current tweets are neither a list nor a dictionary.")
             else:
-                raise ValueError("The contents of file_tweets.json are not a dictionary")
+                raise ValueError("The contents of file_tweets_transformed.json are not a dictionary")
     except FileNotFoundError:
-        logging.error("The file file_tweets.json was not found.")
+        logging.error("The file file_tweets_transformed.json was not found.")
     except json.JSONDecodeError:
-        logging.error("The file file_tweets.json does not contain valid JSON.")
+        logging.error("The file file_tweets_transformed.json does not contain valid JSON.")
     except ValueError as e:
         logging.error(e)
 

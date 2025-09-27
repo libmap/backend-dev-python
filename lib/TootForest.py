@@ -9,7 +9,8 @@ class TootForest(object):
     @staticmethod
     def fromFolder(folder = tootsFetchSettings['folder']):
         toots = Toot.loadFromFolder(folder)
-        toots = filter(lambda t: t.hasLinkTo(), toots)
+        # Filter for posts that contain links to the configured domain
+        toots = filter(lambda t: t.hasLinkTo(tootsFetchSettings['link']), toots)
         # toots = filter(lambda t: not t.hasHashtag('private'), toots)
         return TootForest(toots)
 

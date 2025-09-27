@@ -50,6 +50,12 @@ class Toot(object):
         return len(self.children) > 0
 
     def asApiDict(self, add = {}):
+        # Determine source platform
+        source = 'mastodon.social'  # Default
+        if 'platform' in self.data:
+            if self.data['platform'] == 'bluesky':
+                source = 'bluesky'
+
         return {
             'url': self.getPathOfLinksTo()[0],
             'hashtags': self.getHashtags(),
@@ -59,7 +65,7 @@ class Toot(object):
             'display_name': self.getUserScreenName(),
             'avatar': self.getUserImageHttps(),
             'media': self.getMedia(),
-            'source': 'mastodon.social',
+            'source': source,
             **add
         }
 
@@ -81,7 +87,7 @@ class Toot(object):
         return self.data['id']
 
     def getUserId(self):
-        return self.data['account']['id']
+        return self.data['account'].get('id', self.data['account'].get('acct', ''))
 
     def getUserName(self):
         return self.data['account']['username']
@@ -90,15 +96,39 @@ class Toot(object):
         return self.data['account']['display_name']
     
     def getUserImageHttps(self):
-        return self.data['account']['avatar_static']
+        return self.data['account'].get('avatar_static', '')
 
     def getDateTime(self):
-        return datetime.strptime(self.data['created_at'], '%Y-%m-%d %H:%M:%S')
+        date_str = self.data['created_at']
+        # Handle different date formats (Mastodon vs Bluesky)
+        try:
+            return datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            try:
+                # ISO format with microseconds (Bluesky)
+                return datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+            except ValueError:
+                # Fallback - return current time if parsing fails
+                return datetime.now()
 
     def getMedia(self):
+        media = []
+        # Handle Mastodon-style media
         if 'media_attachments' in self.data:
-            return [item['preview_url'] for item in self.data['media_attachments'] if 'preview_url' in item]
-        return []
+            media.extend([item['preview_url'] for item in self.data['media_attachments'] if 'preview_url' in item])
+        # Handle Bluesky media from embed
+        if 'platform' in self.data and self.data['platform'] == 'bluesky' and 'raw_record' in self.data:
+            raw_record = self.data['raw_record']
+            if 'embed' in raw_record:
+                # Handle image embeds
+                if raw_record['embed'].get('$type') == 'app.bsky.embed.images' and 'images' in raw_record['embed']:
+                    for image in raw_record['embed']['images']:
+                        if 'image' in image and '$link' in image['image']['ref']:
+                            # Convert blob reference to CDN URL
+                            blob_ref = image['image']['ref']['$link']
+                            cdn_url = f"https://cdn.bsky.app/img/feed_thumbnail/plain/did:plc:adsquh2z4vzbpeelyvkq4rbl/{blob_ref}@jpeg"
+                            media.append(cdn_url)
+        return media
 
     def getText(self):
         if 'content' in self.data:
@@ -125,10 +155,21 @@ class Toot(object):
 
     def getHashtags(self):
         hashtags = []
-        if self.data['tags']:
+        # Handle Mastodon-style tags
+        if 'tags' in self.data and self.data['tags']:
             hashtags.extend([h['name'] for h in self.data['tags']])
-        if 'extended_toot' in self.data and self.data['extended_toot']['entities']['hashtags']:
+        # Handle extended_toot format
+        if 'extended_toot' in self.data and 'entities' in self.data['extended_toot'] and 'hashtags' in self.data['extended_toot']['entities']:
             hashtags.extend([h['text'] for h in self.data['extended_toot']['entities']['hashtags']])
+        # Handle Bluesky hashtags from facets
+        if 'platform' in self.data and self.data['platform'] == 'bluesky' and 'raw_record' in self.data:
+            raw_record = self.data['raw_record']
+            if 'facets' in raw_record:
+                for facet in raw_record['facets']:
+                    if 'features' in facet:
+                        for feature in facet['features']:
+                            if feature.get('$type') == 'app.bsky.richtext.facet#tag' and 'tag' in feature:
+                                hashtags.append(feature['tag'])
         return hashtags
 
     def hasHashtag(self, hashtag):
@@ -136,14 +177,50 @@ class Toot(object):
 
     def getLinks(self):
         urls = []
-        if 'content' in self.data:
+        content = self.getText()
+
+        # For Bluesky posts - extract URLs from structured data first
+        if 'platform' in self.data and self.data['platform'] == 'bluesky' and 'raw_record' in self.data:
+            raw_record = self.data['raw_record']
+
+            # Extract from embed.external.uri
+            if 'embed' in raw_record and 'external' in raw_record['embed'] and 'uri' in raw_record['embed']['external']:
+                urls.append(raw_record['embed']['external']['uri'])
+
+            # Extract from facets (rich text links)
+            if 'facets' in raw_record:
+                for facet in raw_record['facets']:
+                    if 'features' in facet:
+                        for feature in facet['features']:
+                            if feature.get('$type') == 'app.bsky.richtext.facet#link' and 'uri' in feature:
+                                urls.append(feature['uri'])
+
+        # For Mastodon posts with HTML content
+        if 'content' in self.data and '<' in self.data['content']:
             extractor = URLExtractor()
             extractor.feed(self.data['content'])
             urls.extend(extractor.urls)
-        return urls
+
+        # Fallback: extract URLs from plain text content using regex
+        if content:
+            import re
+            # Match URLs in plain text (http/https URLs)
+            url_pattern = r'https?://[^\s<>"]+|[a-zA-Z0-9][-a-zA-Z0-9]*\.(?:[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?)[^\s<>"]*'
+            text_urls = re.findall(url_pattern, content)
+            urls.extend(text_urls)
+
+        return list(set(urls))  # Remove duplicates
 
     def getPathOfLinksTo(self, to = tootsFetchSettings['link']):
-        return [u.split(to, 1)[1] for u in self.getLinks() if to in u]
+        links = self.getLinks()
+        matching_links = [u for u in links if to in u]
+
+        # For Bluesky posts, prioritize full URLs (those starting with https://) over truncated ones
+        if 'platform' in self.data and self.data['platform'] == 'bluesky':
+            # Sort so full URLs come first
+            matching_links.sort(key=lambda x: not x.startswith('https://'))
+
+        return [u.split(to, 1)[1] for u in matching_links]
 
     def hasLinkTo(self, to = f"{tootsFetchSettings['link']}/@"):
         return len(self.getPathOfLinksTo(to)) > 0
