@@ -178,9 +178,11 @@ class Toot(object):
     def getLinks(self):
         urls = []
         content = self.getText()
+        is_bluesky = 'platform' in self.data and self.data['platform'] == 'bluesky'
+        has_html_content = 'content' in self.data and '<' in self.data['content']
 
         # For Bluesky posts - extract URLs from structured data first
-        if 'platform' in self.data and self.data['platform'] == 'bluesky' and 'raw_record' in self.data:
+        if is_bluesky and 'raw_record' in self.data:
             raw_record = self.data['raw_record']
 
             # Extract from embed.external.uri
@@ -196,13 +198,15 @@ class Toot(object):
                                 urls.append(feature['uri'])
 
         # For Mastodon posts with HTML content
-        if 'content' in self.data and '<' in self.data['content']:
+        if has_html_content:
             extractor = URLExtractor()
             extractor.feed(self.data['content'])
             urls.extend(extractor.urls)
 
         # Fallback: extract URLs from plain text content using regex
-        if content:
+        # Skip if we already found URLs from structured data (Bluesky) or HTML (Mastodon)
+        # This avoids extracting HTML-encoded duplicates or truncated display text
+        if content and not ((is_bluesky or has_html_content) and len(urls) > 0):
             import re
             # Match URLs in plain text (http/https URLs)
             url_pattern = r'https?://[^\s<>"]+|[a-zA-Z0-9][-a-zA-Z0-9]*\.(?:[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?)[^\s<>"]*'
